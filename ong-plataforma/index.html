@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+<script>
+
+
+(function(){ <!-- Tema escuro por padrão -->
+  try{
+    var KEY='theme_dark';
+    var s = localStorage.getItem(KEY);
+    var dark = s!==null ? JSON.parse(s) : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if(!dark){ document.documentElement.classList.add('theme-light'); }
+  }catch(e){}
+})();
+</script>
+
+<!-- Fim tema escuro por padrão -->
+
+<!-- SEO básico -->
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script defer src="app.js"></script>
+  <title>ONG+ | Plataforma para ONGs</title>
+</head>
+
+<!--CORPO DA PÁGINA-->
+
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+  <div id="sr-updates" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!--NAVEGAÇÃO-->
+
+  <header class="nav" role="banner">
+    <div class="nav-inner container">
+      <div class="brand" aria-label="ONG+, início">
+        <img src="assets/img/logo.svg" alt="ONG+ — Logotipo" />
+      </div>
+      <nav aria-label="Principal">
+        <ul role="list">
+          <li><a class="active" href="index.html" aria-current="page">Início</a></li>
+          <li><a href="#projetos">Projetos</a></li>
+          <li><a href="#como-funciona">Como funciona</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </nav>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <button id="contrastToggle" class="btn" type="button" aria-label="Alternar alto contraste" aria-pressed="false">Alto contraste</button>
+        <button id="themeToggle" class="switch" type="button" aria-label="Alternar tema escuro" aria-pressed="true">
+          <span class="p" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!--Conteúdo Principal-->
+
+  <main class="container" id="conteudo-principal" role="main" tabindex="-1">
+    <section class="hero">
+      <div>
+        <h1>Plataforma completa para <span style="background:linear-gradient(135deg,#22d3ee,#818cf8);-webkit-background-clip:text;background-clip:text;color:transparent">gestão de ONGs</span></h1>
+        <p>Gerencie atividades, divulgue projetos, capte recursos e engaje voluntários em um só lugar.</p>
+        <div class="cta">
+          <a class="btn primary" href="dashboard.html">Acessar Dashboard</a>
+          <a class="btn" href="#projetos">Ver projetos</a>
+        </div>
+      </div>
+      <img class="card" src="assets/img/hero.jpeg" alt="Ilustração de cards com projetos e dados" style="width:100%;height:auto"/>
+    </section>
+
+    <section id="projetos" class="section">
+      <h2>Projetos em destaque</h2>
+      <p>Os dados abaixo são carregados do <code>localStorage</code>. Use o Dashboard para criar/editar.</p>
+      <div class="grid cols-3" id="projectGrid" role="list"></div>
+    </section>
+  </main>
+
+<!--FOOTER-->  
+
+  <footer class="footer-ngo" role="contentinfo">
+    <div class="footer-ngo__inner container">
+      <section class="footer-ngo__brand">
+        <img src="assets/img/logo.svg" alt="ONG+ — Logotipo" width="120" height="36" />
+        <p>Transparência e impacto social: gerencie projetos, atividades e doações em um só lugar.</p>
+        <ul class="footer-ngo__badges" role="list" aria-label="Selo de boas práticas">
+          <li><span class="badge">Transparência</span></li>
+          <li><span class="badge">Acessível</span></li>
+          <li><span class="badge">Open Data</span></li>
+        </ul>
+      </section>
+      <nav class="footer-ngo__nav" aria-label="Navegação do rodapé">
+        <div>
+          <h3 class="footer-ngo__title">Plataforma</h3>
+          <ul role="list">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="#projetos">Projetos</a></li>
+            <li><a href="#como-funciona">Como funciona</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-ngo__title">Organização</h3>
+          <address>
+            <p class="footer-ngo__muted">Rua Exemplo, 123 — São Paulo, SP</p>
+            <p>
+              <a href="mailto:contato@exemplo.org" class="footer-ngo__link">contato@exemplo.org</a><br>
+              <a href="tel:+5511999999999" class="footer-ngo__link">+55 (11) 99999-9999</a>
+            </p>
+          </address>
+          <ul class="footer-ngo__social" role="list" aria-label="Redes sociais">
+            <li><a href="#" aria-label="Instagram">IG</a></li>
+            <li><a href="#" aria-label="LinkedIn">IN</a></li>
+            <li><a href="#" aria-label="YouTube">YT</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-ngo__title">Boletim</h3>
+          <form class="footer-ngo__form" onsubmit="event.preventDefault(); announce('Inscrição recebida.'); this.reset();">
+            <label for="nl-email" class="sr-only">Seu e-mail</label>
+            <input id="nl-email" class="input" type="email" required placeholder="seu@email.com" />
+            <button class="btn primary" type="submit">Assinar</button>
+          </form>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-ngo__legal">
+      <div class="container footer-ngo__legal-inner">
+        <p>
+          &copy; 2025 ONG+. Todos os direitos reservados.
+        </p>
+        <ul role="list" class="footer-ngo__legal-links">
+          <li><a href="#" aria-disabled="true">Termos</a></li>
+          <li><a href="#" aria-disabled="true">Privacidade</a></li>
+          <li><button type="button" class="btn" id="contrastToggleFooter" aria-pressed="false">Alto contraste</button></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+
+<!-- Fim do código -->

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Tema escuro por padrão -->
+
+<script>
+(function(){
+  try{
+    var KEY='theme_dark';
+    var s = localStorage.getItem(KEY);
+    var dark = s!==null ? JSON.parse(s) : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if(!dark){ document.documentElement.classList.add('theme-light'); }
+  }catch(e){}
+})();
+</script>
+
+<!-- Fim tema escuro por padrão -->
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Dashboard | ONG+</title>
+</head>
+<body>
+  <!-- ANTES -->
+<script defer src="dashboard.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<!-- DEPOIS -->
+<script defer src="dashboard.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+  <div id="sr-updates" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <!--NAVEGAÇÃO-->
+
+  <header class="nav" role="banner">
+    <div class="nav-inner container">
+      <div class="brand" aria-label="ONG+, início">
+        <img src="assets/img/logo.svg" alt="ONG+ — Logotipo" />
+        <span>ONG+</span>
+      </div>
+      <nav aria-label="Principal">
+        <ul role="list">
+          <li><a href="index.html">Início</a></li>
+          <li><a class="active" href="dashboard.html" aria-current="page">Dashboard</a></li>
+        </ul>
+      </nav>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <button id="contrastToggle" class="btn" type="button" aria-label="Alternar alto contraste" aria-pressed="false">Alto contraste</button>
+        <button id="themeToggle" class="switch" type="button" aria-label="Alternar tema escuro" aria-pressed="true">
+          <span class="p" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!--Conteúdo Principal-->
+
+  <main class="container" id="conteudo-principal" role="main" tabindex="-1" x-data="dashboard()">
+    <section class="section">
+      <h2 style="margin-bottom:8px">Visão geral</h2>
+      <div class="kpis">
+        <div class="card kpi">
+          <div class="title">Projetos</div>
+          <div class="value" x-text="projects.length"></div>
+        </div>
+        <div class="card kpi">
+          <div class="title">Atividades</div>
+          <div class="value" x-text="activities.length"></div>
+        </div>
+        <div class="card kpi">
+          <div class="title">Voluntários</div>
+          <div class="value" x-text="volunteers.length"></div>
+        </div>
+        <div class="card kpi">
+          <div class="title">Doações (R$)</div>
+          <div class="value" x-text="donations.reduce((a,b)=>a+b.value,0).toLocaleString('pt-BR',{minimumFractionDigits:2})"></div>
+        </div>
+      </div>
+    </section>
+
+<!-- Gráficos e tabelas -->
+
+    <section class="section">
+      <div class="grid cols-2">
+        <div class="card" style="padding:16px">
+          <h3>Fluxo de Doações (últimos 12 meses)</h3>
+          <canvas id="donationChart" height="120" aria-label="Gráfico de doações dos últimos 12 meses" role="img"></canvas>
+        </div>
+        <div class="card" style="padding:16px">
+          <h3>Importação/Exportação</h3>
+          <p>Faça backup dos dados em JSON ou carregue um arquivo para importar.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+            <button class="btn" @click="exportData()">Exportar JSON</button>
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="fileIn">Importar JSON</label>
+              <input id="fileIn" type="file" accept="application/json" class="input" @change="importData($event)"/>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<!-- Tabelas de gerenciamento -->
+
+    <section class="section">
+      <div class="card" style="padding:16px">
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <h3 style="margin:0">Projetos</h3>
+          <div style="margin-left:auto;display:flex;gap:8px;align-items:end">
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <label for="buscaProj">Buscar</label>
+              <input id="buscaProj" class="input" placeholder="Buscar..." x-model="projectQuery" @input="filterProjects()"/>
+            </div>
+            <button class="btn primary" @click="openProjectForm()">Novo Projeto</button>
+          </div>
+        </div>
+        <table class="table" style="margin-top:10px" aria-describedby="desc-projetos">
+          <caption id="desc-projetos" class="sr-only">Lista de projetos com status, metas e ações</caption>
+          <thead><tr><th scope="col">Nome</th><th scope="col">Status</th><th scope="col">Meta (R$)</th><th scope="col">Arrecadado</th><th scope="col">Ações</th></tr></thead>
+          <tbody id="projectTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+<!-- Tabelas de atividades e voluntários -->
+
+    <section class="section grid cols-2">
+      <div class="card" style="padding:16px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <h3 style="margin:0">Atividades</h3>
+          <button class="btn primary" style="margin-left:auto" @click="openActivityForm()">Nova</button>
+        </div>
+        <table class="table" style="margin-top:10px" aria-describedby="desc-atividades">
+          <caption id="desc-atividades" class="sr-only">Tabela de atividades com data, responsável e status</caption>
+          <thead><tr><th scope="col">Título</th><th scope="col">Data</th><th scope="col">Responsável</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
+          <tbody id="activityTableBody"></tbody>
+        </table>
+      </div>
+
+<!-- Voluntários -->
+
+      <div class="card" style="padding:16px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <h3 style="margin:0">Voluntários</h3>
+          <button class="btn primary" style="margin-left:auto" @click="openVolunteerForm()">Adicionar</button>
+        </div>
+        <table class="table" style="margin-top:10px" aria-describedby="desc-voluntarios">
+          <caption id="desc-voluntarios" class="sr-only">Tabela de voluntários com contato, interesse e disponibilidade</caption>
+          <thead><tr><th scope="col">Nome</th><th scope="col">Email</th><th scope="col">Interesse</th><th scope="col">Disponibilidade</th><th scope="col">Ações</th></tr></thead>
+          <tbody id="volTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+<!-- Doações -->
+
+    <section class="section">
+      <div class="card" style="padding:16px">
+        <div style="display:flex;gap:10px;align-items:center">
+          <h3 style="margin:0">Registrar Doação</h3>
+        </div>
+        <div class="grid cols-3" style="margin-top:12px">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="donProject">Projeto</label>
+            <select id="donProject" class="input"></select>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="donName">Nome do doador (opcional)</label>
+            <input id="donName" class="input" />
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <label for="donValue">Valor (R$)</label>
+            <input id="donValue" class="input" type="number" min="1" step="1" />
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <button class="btn primary" @click="addDonation()">Adicionar Doação</button>
+        </div>
+        <table class="table" style="margin-top:10px" aria-describedby="desc-doacoes">
+          <caption id="desc-doacoes" class="sr-only">Tabela de doações registradas com projeto, doador, valor e data</caption>
+          <thead><tr><th scope="col">Projeto</th><th scope="col">Doador</th><th scope="col">Valor (R$)</th><th scope="col">Data</th></tr></thead>
+          <tbody id="donTableBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+<!-- Modal para formulários -->
+
+    <div id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,.7)">
+      <div class="card" style="width:min(720px,92vw);padding:18px">
+        <div style="display:flex;align-items:center">
+          <h3 id="modalTitle" style="margin:0">Título</h3>
+          <button class="btn" style="margin-left:auto" onclick="closeModal()">Fechar</button>
+        </div>
+        <div id="modalBody" style="margin-top:12px"></div>
+      </div>
+    </div>
+  </main>
+
+<!--FOOTER-->
+
+  <footer class="footer-ngo" role="contentinfo">
+    <div class="footer-ngo__inner container">
+      <section class="footer-ngo__brand">
+        <img src="assets/img/logo.svg" alt="ONG+ — Logotipo" width="120" height="36" />
+        <p>Transparência e impacto social: gerencie projetos, atividades e doações em um só lugar.</p>
+        <ul class="footer-ngo__badges" role="list" aria-label="Selo de boas práticas">
+          <li><span class="badge">Transparência</span></li>
+          <li><span class="badge">Acessível</span></li>
+          <li><span class="badge">Open Data</span></li>
+        </ul>
+      </section>
+      <nav class="footer-ngo__nav" aria-label="Navegação do rodapé">
+        <div>
+          <h3 class="footer-ngo__title">Plataforma</h3>
+          <ul role="list">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="dashboard.html">Dashboard</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3 class="footer-ngo__title">Contato</h3>
+          <address>
+            <p class="footer-ngo__muted">Rua Exemplo, 123 — São Paulo, SP</p>
+            <a href="mailto:contato@exemplo.org" class="footer-ngo__link">contato@exemplo.org</a>
+          </address>
+        </div>
+        <div>
+          <h3 class="footer-ngo__title">Preferências</h3>
+          <ul role="list" class="footer-ngo__legal-links">
+            <li><button type="button" class="btn" id="contrastToggleFooter" aria-pressed="false">Alto contraste</button></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+    <div class="footer-ngo__legal">
+      <div class="container footer-ngo__legal-inner">
+        <p>ONG+ Dashboard</p>
+        <ul role="list" class="footer-ngo__legal-links">
+          <li><a href="#" aria-disabled="true">Termos</a></li>
+          <li><a href="#" aria-disabled="true">Privacidade</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
