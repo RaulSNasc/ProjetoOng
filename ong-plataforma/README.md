@@ -1,30 +1,44 @@
+# 🌍 Plataforma Web para ONGs
 
-# ONG+ — Plataforma Web (HTML/CSS/JS)
+Uma aplicação web desenvolvida para conectar **ONGs**, **voluntários** e **projetos sociais**, facilitando o gerenciamento de atividades, doações e participação comunitária.
 
-Projeto para gestão de ONGs, com:
-- HTML5 semântico e acessível
-- CSS responsivo e avançado (grid, flex, variáveis, dark toggle)
-- JavaScript com DOM, eventos, `localStorage`, módulos lógicos
-- Integração com Alpine.js (reatividade leve) e Chart.js (gráficos)
-- CRUD de Projetos, Atividades, Voluntários e registro de Doações
-- Importação/Exportação de dados (`.json`)
+## 📖 Sobre o Projeto
 
-## Como usar
+Este sistema tem como objetivo **modernizar e digitalizar o trabalho das organizações não governamentais (ONGs)**, oferecendo uma interface acessível, intuitiva e responsiva para:
 
-1. Extraia o `.zip` e **abra `index.html` no navegador.
-2. Clique em Dashboard para criar/editar dados.
-3. Todos os dados ficam no localStorage do seu navegador (sem backend).
+- Cadastrar ONGs, voluntários e projetos
+- Gerenciar atividades e participantes
+- Controlar doações e recursos
+- Promover ações sociais de forma transparente
 
-## Estrutura
-```
-/assets/img     # imagens SVG locais
-index.html      # landing e vitrine de projetos
-dashboard.html  # painel administrativo (CRUD + gráficos)
-style.css       # visual moderno responsivo
-app.js          # lógica da landing (DOM/eventos/localStorage)
-dashboard.js    # lógica do dashboard (CRUD, gráficos, import/export)
-```
+> 💡 O projeto foi desenvolvido com foco em **acessibilidade**, **usabilidade** e **impacto social positivo**.
 
-## Licença
+---
 
-Uso acadêmico/livre para fins educacionais.
+## 🧩 Funcionalidades Principais
+
+- ✅ Cadastro, edição e exclusão de ONGs, projetos e voluntários  
+- 🕓 Agendamento e acompanhamento de atividades  
+- 💬 Sistema de contato entre ONGs e voluntários  
+- 🌗 Modo claro, escuro e alto contraste  
+- ♿ Suporte completo para leitores de tela e navegação por teclado  
+- 📊 Dashboard com estatísticas e relatórios simples  
+
+---
+
+## 🛠️ Tecnologias Utilizadas
+
+| Categoria | Tecnologias |
+|------------|--------------|
+| **Frontend** | React, Tailwind CSS, Vite |
+| **Acessibilidade** | WAI-ARIA, Lighthouse, WCAG 2.1 |
+| **Backend (opcional)** | Node.js, Express, SQLite ou MongoDB |
+| **Design** | SVGs personalizados e componentes responsivos |
+| **Controle de Versão** | Git + GitHub |
+
+---
+
+## ⚙️ Instalação e Execução
+
+Baixar o zip, extrair e iniciar o arquivo em seu navegador.
+
